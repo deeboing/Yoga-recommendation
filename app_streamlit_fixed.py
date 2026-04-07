@@ -5,19 +5,13 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
 import os
-warnings.filterwarnings('ignore')
 
-# Fix NumPy 2.0 multiprocessing compatibility
+# Fix NumPy 2.0 and scikit-learn multiprocessing compatibility
 os.environ['JOBLIB_START_METHOD'] = 'threading'
 os.environ['NUMPY_EXPERIMENTAL_ARRAY_FUNCTION'] = '1'
-
-from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
-from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
-from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
-from sklearn.metrics.pairwise import cosine_similarity
-from sklearn.linear_model import LogisticRegression
-from sklearn.decomposition import TruncatedSVD
+os.environ['PYTHONPATH'] = os.pathsep.join([os.environ.get('PYTHONPATH', ''), os.path.dirname(__file__)])
+warnings.filterwarnings('ignore', category=UserWarning, module='sklearn')
+warnings.filterwarnings('ignore', category=FutureWarning, module='sklearn')
 
 # Set page config
 st.set_page_config(
@@ -60,7 +54,7 @@ st.markdown('<h1 class="main-header">HRV-Driven Adaptive Yoga Recommendation Sys
 st.sidebar.title("Navigation")
 page = st.sidebar.selectbox("Choose a page", ["Home", "Data Analysis", "Model Training", "Get Recommendations", "About"])
 
-# Load data function
+# Load data function with error handling
 @st.cache_data
 def load_data():
     try:
@@ -71,6 +65,9 @@ def load_data():
     except FileNotFoundError:
         st.error("Data files not found. Please ensure CSV files are in the same directory.")
         return None, None, None
+    except Exception as e:
+        st.error(f"Error loading data: {str(e)}")
+        return None, None, None
 
 # Initialize session state
 if 'models_trained' not in st.session_state:
@@ -80,7 +77,7 @@ if 'recommendations_ready' not in st.session_state:
 
 if page == "Home":
     st.markdown("""
-    ## Welcome to the HRV-Driven Yoga Recommendation System
+    ## Welcome to HRV-Driven Yoga Recommendation System
     
     This advanced system uses Heart Rate Variability (HRV) and other health parameters 
     to provide personalized yoga recommendations.
@@ -92,13 +89,9 @@ if page == "Home":
     - **Real-time Recommendations**: Get instant suggestions based on your health profile
     
     ### How to Use:
-    1. Navigate to **Data Analysis** to explore the datasets
-    2. Go to **Model Training** to train the recommendation models
+    1. Navigate to **Data Analysis** to explore datasets
+    2. Go to **Model Training** to train recommendation models
     3. Visit **Get Recommendations** to receive personalized yoga suggestions
-    
-    ### Quick Start:
-    - Click **"Train Models"** below to train all models at once
-    - Click **"Get Recommendations"** to receive personalized suggestions
     """)
     
     # Display key metrics
@@ -228,7 +221,7 @@ elif page == "Model Training":
             y = merged['target']
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
             
-            # Train models
+            # Train models with single process to avoid multiprocessing issues
             models = {
                 'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=12,
                                                        min_samples_leaf=5, random_state=42,
@@ -288,7 +281,7 @@ elif page == "Get Recommendations":
     st.header("Get Personalized Yoga Recommendations")
     
     if not st.session_state.models_trained:
-        st.warning("Please train models first in the Model Training section.")
+        st.warning("Please train models first in Model Training section.")
         st.stop()
     
     # User input form
