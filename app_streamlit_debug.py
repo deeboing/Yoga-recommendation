@@ -127,8 +127,6 @@ except Exception as e:
 @st.cache_data
 def load_data():
     """Load all datasets with extensive error handling and debugging"""
-    debug_print("Starting data loading process")
-    
     try:
         debug_print("Attempting to load yoga_asanas_knowledge_base.csv")
         asanas_df = pd.read_csv('yoga_asanas_knowledge_base.csv')
