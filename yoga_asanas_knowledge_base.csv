@@ -1,0 +1,46 @@
+asana_id,asana_name,primary_benefit,difficulty_level,duration_minutes,contraindications,intensity
+1,Balasana,digestion,beginner,1,none,0.94
+2,Trikonasana,balance,advanced,2,menstruation,0.31
+3,Sarvangasana,balance,beginner,2,none,0.87
+4,Bhujangasana,stress_relief,beginner,3,hypertension,0.57
+5,Supta Baddha Konasana,digestion,beginner,4,pregnancy,0.69
+6,Karnapidasana,stress_relief,intermediate,1,none,0.82
+7,Lolasana,stress_relief,beginner,2,pregnancy,0.68
+8,Malasana,stress_relief,intermediate,1,pregnancy,0.99
+9,Pindasana,digestion,beginner,4,hypertension,0.98
+10,Dhanurasana,balance,beginner,3,pregnancy,0.67
+11,Adho Mukha Svanasana,strength,advanced,4,pregnancy,0.45
+12,Makarasana,stress_relief,advanced,4,hypertension,0.42
+13,Eka Pada Rajakapotasana,stress_relief,intermediate,4,none,0.61
+14,Urdhva Mukha Svanasana,stress_relief,advanced,4,pregnancy,0.75
+15,Anantasana,balance,beginner,2,none,0.88
+16,Viparita Karani,flexibility,advanced,2,hypertension,0.84
+17,Vrikshasana,balance,beginner,2,menstruation,0.61
+18,Urdhva Padmasana,strength,advanced,4,back_injury,0.85
+19,Parsvottanasana,digestion,advanced,1,none,0.73
+20,Setu Bandha Sarvangasana,flexibility,intermediate,4,pregnancy,0.9
+21,Ardha Chandrasana,respiratory,advanced,4,menstruation,0.82
+22,Salabhasana,respiratory,intermediate,4,none,0.96
+23,Parsva Bakasana,circulation,beginner,4,hypertension,0.35
+24,Supta Padangusthasana,respiratory,beginner,4,pregnancy,0.83
+25,Uttanasana,digestion,intermediate,3,hypertension,0.45
+26,Ardha Matsyendrasana,respiratory,beginner,3,hypertension,0.8
+27,Kurmasana,respiratory,beginner,2,back_injury,0.72
+28,Ganda Bherundasana,circulation,intermediate,2,none,0.42
+29,Supta Virasana,digestion,intermediate,1,menstruation,0.86
+30,Chaturanga Dandasana,digestion,beginner,4,pregnancy,0.36
+31,Bakasana,digestion,advanced,3,hypertension,0.82
+32,Prasarita Padottanasana,digestion,beginner,4,menstruation,0.74
+33,Tadasana,flexibility,beginner,3,menstruation,0.82
+34,Janu Sirsasana,circulation,intermediate,3,back_injury,0.46
+35,Sirsasana,circulation,advanced,1,back_injury,0.93
+36,Bharadvajasana,respiratory,intermediate,4,hypertension,0.38
+37,Savasana,stress_relief,beginner,1,menstruation,0.8
+38,Kapotasana,strength,beginner,4,none,0.47
+39,Marichyasana A,flexibility,beginner,2,pregnancy,0.35
+40,Ushtrasana,strength,beginner,3,menstruation,0.59
+41,Halasana,digestion,beginner,4,pregnancy,0.31
+42,Parsva Dhanurasana,respiratory,intermediate,2,pregnancy,0.73
+43,Pashchimottanasana,respiratory,advanced,1,pregnancy,0.32
+44,Pincha Mayurasana,circulation,intermediate,3,back_injury,0.77
+45,Krounchasana,digestion,beginner,1,hypertension,0.42
