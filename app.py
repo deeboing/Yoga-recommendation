@@ -619,12 +619,12 @@ Sample Statistics:
                 recommendations = self.get_cf_recommendations(user_id)
             elif rec_type == "cb":
                 recommendations = self.get_cb_recommendations(user_id)
-            else:  # hybrid
+            else:
                 recommendations = self.get_hybrid_recommendations(user_id)
             
             # Display results
             for _, row in recommendations.iterrows():
-                score = row.get('hybrid_score', 0.8)  # Default score if not available
+                score = row.get('hybrid_score', 0.8)
                 self.rec_tree.insert('', tk.END, values=(
                     row['asana_id'],
                     row['asana_name'],
@@ -691,11 +691,11 @@ Sample Statistics:
         
         # Normalize CF to [0,1] - use np.ptp for NumPy 2.0 compatibility
         cf_vals = np.array(list(cf_scores.values()))
-        cf_range = np.ptp(cf_vals)  # Use np.ptp instead of .ptp()
+        cf_range = np.ptp(cf_vals)
         if cf_range > 0:
             cf_norm = (cf_vals - cf_vals.min()) / cf_range
         else:
-            cf_norm = np.ones_like(cf_vals) * 0.5  # All values are the same
+            cf_norm = np.ones_like(cf_vals) * 0.5
         cf_norm_dict = dict(zip(cf_scores.keys(), cf_norm))
         
         # Hybrid
@@ -888,7 +888,7 @@ Sample Statistics:
         
         self.asanas_df['difficulty_level'].value_counts().plot.pie(
             ax=axes[1], autopct='%1.1f%%', startangle=90,
-            colors=['#ff9999','#66b3ff','#99ff99','#ffcc99'])
+            colors=['
         axes[1].set_title('Asana Difficulty Levels')
         axes[1].set_ylabel('')
         

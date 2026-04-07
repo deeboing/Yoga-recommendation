@@ -168,7 +168,7 @@ def fix_jupyter_notebook(notebook_path):
             
             # Fix undefined variables
             if 'confusion_matrix(y_test, y_pred)' in source and 'if \'y_pred\' not in locals():' not in source:
-                source = """# Ensure Random Forest is trained before confusion matrix
+                source = """
 if 'y_pred' not in locals():
     rf = RandomForestClassifier(n_estimators=200, max_depth=12,
                                  min_samples_leaf=5, random_state=42,
@@ -189,7 +189,7 @@ plt.tight_layout()
 plt.show()"""
             
             if 'res_df = pd.DataFrame(results)' in source and 'if \'results\' not in locals():' not in source:
-                source = """# Model Comparison - Generate results if not available
+                source = """
 if 'results' not in locals():
     # Ensure required variables are available
     if 'X' not in locals() or 'y' not in locals():
