@@ -495,7 +495,7 @@ elif page == "Get Recommendations":
                 asanas_df, _, _ = load_data()
                 if asanas_df is None:
                     st.error("Error loading yoga poses data")
-                    return
+                    st.stop()
                 
                 # Generate recommendations with error handling
                 debug_print("Generating recommendations based on user profile")
