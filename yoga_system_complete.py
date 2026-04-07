@@ -21,7 +21,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import warnings
+import os
 warnings.filterwarnings('ignore')
+
+# Fix NumPy 2.0 multiprocessing compatibility issues
+os.environ['JOBLIB_START_METHOD'] = 'threading'
+os.environ['NUMPY_EXPERIMENTAL_ARRAY_FUNCTION'] = '1'
+warnings.filterwarnings('ignore', category=UserWarning, module='sklearn')
 
 from sklearn.preprocessing import LabelEncoder, StandardScaler, MinMaxScaler
 from sklearn.model_selection import train_test_split, cross_val_score
@@ -46,6 +52,19 @@ except ImportError:
 
 sns.set_theme(style='whitegrid', palette='muted')
 plt.rcParams['figure.dpi'] = 120
+
+
+def safe_cross_val_score(model, X, y, cv=5, scoring='accuracy', n_jobs=1):
+    """
+    Safe cross-validation that works with NumPy 2.0
+    Uses single process to avoid multiprocessing issues
+    """
+    # Force single process to avoid NumPy 2.0 multiprocessing issues
+    if n_jobs == -1 or n_jobs > 1:
+        print("Using single process (n_jobs=1) to avoid NumPy 2.0 multiprocessing issues")
+        n_jobs = 1
+    
+    return cross_val_score(model, X, y, cv=cv, scoring=scoring, n_jobs=n_jobs)
 
 
 def emergency_fix():
