@@ -28,10 +28,7 @@ import sys
 import warnings
 import traceback
 
-# Fix NumPy 2.0 multiprocessing compatibility
-os.environ['JOBLIB_START_METHOD'] = 'threading'
-os.environ['NUMPY_EXPERIMENTAL_ARRAY_FUNCTION'] = '1'
-os.environ['PYTHONPATH'] = os.pathsep.join([os.environ.get('PYTHONPATH', ''), os.path.dirname(__file__)])
+# Fix scikit-learn warnings
 warnings.filterwarnings('ignore', category=UserWarning, module='sklearn')
 warnings.filterwarnings('ignore', category=FutureWarning, module='sklearn')
 
