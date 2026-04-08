@@ -874,32 +874,85 @@ def run_streamlit_standalone():
                 if asanas_df is None:
                     st.stop()
                 
-                # Generate recommendations (simplified version)
+                # Generate recommendations with dynamic scoring
                 recommendations = []
+                
+                # Map difficulty levels to numeric values for comparison
+                difficulty_map = {'beginner': 1, 'intermediate': 2, 'advanced': 3}
+                flexibility_map = {'low': 1, 'medium': 2, 'high': 3}
+                
                 for idx, row in asanas_df.iterrows():
-                    # Simple scoring based on user profile
-                    score = 0.5  # Base score
+                    # Start with base score
+                    score = 0.3
                     
-                    # Adjust based on stress index
-                    if stress_index > 0.7 and row['primary_benefit'] in ['stress_relief', 'digestion']:
-                        score += 0.2
+                    # 1. Stress-based scoring (0-0.25)
+                    if stress_index > 0.6:
+                        if row['primary_benefit'] in ['stress_relief', 'relaxation']:
+                            score += 0.25
+                        elif row['primary_benefit'] in ['digestion', 'sleep']:
+                            score += 0.15
+                    elif stress_index < 0.3:
+                        if row['primary_benefit'] in ['strength', 'energy']:
+                            score += 0.2
                     
-                    # Adjust based on experience
-                    if yoga_experience < 6 and row['difficulty_level'] == 'beginner':
-                        score += 0.2
-                    elif yoga_experience >= 12 and row['difficulty_level'] in ['intermediate', 'advanced']:
-                        score += 0.2
+                    # 2. Experience-difficulty matching (0-0.25)
+                    pose_difficulty = difficulty_map.get(row['difficulty_level'], 2)
+                    if yoga_experience < 3:
+                        if pose_difficulty == 1:
+                            score += 0.25
+                        elif pose_difficulty == 2:
+                            score += 0.1
+                    elif yoga_experience < 12:
+                        if pose_difficulty == 2:
+                            score += 0.25
+                        elif pose_difficulty == 1:
+                            score += 0.15
+                        elif pose_difficulty == 3:
+                            score += 0.05
+                    else:  # Experienced users
+                        if pose_difficulty == 3:
+                            score += 0.25
+                        elif pose_difficulty == 2:
+                            score += 0.15
+                        elif pose_difficulty == 1:
+                            score += 0.05
                     
-                    # Adjust based on flexibility
-                    if flexibility_level == 'low' and row['difficulty_level'] == 'beginner':
+                    # 3. Flexibility matching (0-0.15)
+                    user_flexibility = flexibility_map.get(flexibility_level, 2)
+                    if user_flexibility == 1 and pose_difficulty == 1:
+                        score += 0.15
+                    elif user_flexibility == 2 and pose_difficulty in [1, 2]:
                         score += 0.1
+                    elif user_flexibility == 3:
+                        score += 0.1
+                    
+                    # 4. Health condition considerations (0-0.15)
+                    if chronic_condition == 'hypertension' and row['primary_benefit'] in ['stress_relief', 'relaxation']:
+                        score += 0.15
+                    elif chronic_condition == 'diabetes' and row['primary_benefit'] in ['digestion', 'metabolism']:
+                        score += 0.15
+                    elif chronic_condition == 'arthritis' and row['difficulty_level'] == 'beginner':
+                        score += 0.15
+                    elif chronic_condition == 'asthma' and row['primary_benefit'] in ['breathing', 'respiratory']:
+                        score += 0.15
+                    elif chronic_condition == 'none':
+                        score += 0.05  # Slight bonus for healthy users
+                    
+                    # 5. Age factor (0-0.1)
+                    if age > 50 and pose_difficulty == 1:
+                        score += 0.1
+                    elif age < 30 and pose_difficulty >= 2:
+                        score += 0.1
+                    
+                    # Cap score at 1.0
+                    score = min(score, 1.0)
                     
                     recommendations.append({
                         'asana_name': row['asana_name'],
                         'primary_benefit': row['primary_benefit'],
                         'difficulty_level': row['difficulty_level'],
                         'duration_minutes': row['duration_minutes'],
-                        'suitability_score': min(score, 1.0)
+                        'suitability_score': score
                     })
                 
                 # Sort by suitability score
@@ -910,21 +963,30 @@ def run_streamlit_standalone():
                 st.subheader("Your Personalized Yoga Recommendations")
                 
                 for _, row in recommendations_df.iterrows():
-                    st.markdown(f"""
-                        <div class="recommendation-card">
-                            <h4>{row['asana_name']}</h4>
-                            <p><strong>Primary Benefit:</strong> {row['primary_benefit']}</p>
-                            <p><strong>Difficulty:</strong> {row['difficulty_level']}</p>
-                            <p><strong>Duration:</strong> {row['duration_minutes']} minutes</p>
-                            <p><strong>Suitability Score:</strong> {row['suitability_score']:.2f}</p>
-                        </div>
-                        """, unsafe_allow_html=True)
+                    with st.container():
+                        col_card1, col_card2 = st.columns([3, 1])
+                        with col_card1:
+                            st.markdown(f"**🧘 {row['asana_name']}**")
+                            st.markdown(f"📋 **Primary Benefit:** {row['primary_benefit']}")
+                            st.markdown(f"📊 **Difficulty:** {row['difficulty_level']}")
+                            st.markdown(f"⏱️ **Duration:** {row['duration_minutes']} minutes")
+                        with col_card2:
+                            st.metric("Suitability Score", f"{row['suitability_score']:.2f}")
+                        st.divider()
                 
                 # Visualization
                 fig, ax = plt.subplots(figsize=(10, 6))
-                recommendations_df.set_index('asana_name')['suitability_score'].sort_values().plot.barh(ax=ax)
-                ax.set_title('Recommendation Suitability Scores')
-                ax.set_xlabel('Suitability Score')
+                colors = plt.cm.RdYlGn(recommendations_df['suitability_score'])
+                recommendations_df_sorted = recommendations_df.sort_values('suitability_score')
+                bars = ax.barh(recommendations_df_sorted['asana_name'], recommendations_df_sorted['suitability_score'], color=colors)
+                ax.set_title('Recommendation Suitability Scores', fontsize=14, fontweight='bold')
+                ax.set_xlabel('Suitability Score', fontsize=12)
+                ax.set_xlim(0, 1)
+                # Add score labels on bars
+                for bar, score in zip(bars, recommendations_df_sorted['suitability_score']):
+                    ax.text(bar.get_width() + 0.01, bar.get_y() + bar.get_height()/2, 
+                           f'{score:.2f}', va='center', fontsize=10)
+                plt.tight_layout()
                 st.pyplot(fig)
     
     elif page == "About":
@@ -980,7 +1042,7 @@ def main():
     When run with Streamlit (detected via command line), runs the web app.
     """
     # Check if being run by Streamlit
-    if STREAMLIT_AVAILABLE and len(sys.argv) > 0 and 'streamlit' in sys.argv[0]:
+    if STREAMLIT_AVAILABLE and ('streamlit' in sys.argv[0] or 'streamlit' in ' '.join(sys.argv)):
         run_streamlit_standalone()
         return
     
